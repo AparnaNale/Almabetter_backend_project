@@ -59,20 +59,25 @@ git clone https://github.com/your-username/backend.git
 ```
 cd backend
 
-2 Install Dependencies
+2 Install Dependencies:
+```
 npm install
-
-3 Create .env File
+```
+3 Create .env File :
+```
 PORT=1000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
-
-Generate Swagger Docs
+```
+Generate Swagger Docs :
+```
 npm run swagger
+```
 
-Start Server
+Start Server :
+```
 nodemon index.js
-
+```
 📘 API Documentation
 Swagger UI available at:
 http://localhost:1000/api-docs
