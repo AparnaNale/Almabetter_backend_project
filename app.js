@@ -5,7 +5,6 @@ import cartRoutes from "./routes/cartRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import userRoutes from "./routes/user.js";
 import swaggerUi from 'swagger-ui-express';
-// import swaggerDocument from './swagger-output.json';
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
 
 
@@ -14,6 +13,13 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Backend is live 🚀",
+  });
+});
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
