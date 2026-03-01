@@ -137,9 +137,52 @@ export const getCartItems = async (req, res) => {
 };
 
 //remove product from cart
+// export const removeFromCart = async (req, res) => {
+//   try {
+//     const { userId, productId } = req.body;
+
+//     const cart = await Cart.findOne({ userId });
+
+//     if (!cart) {
+//       return res.status(404).json({ message: "Cart not found" });
+//     }
+
+//     //Check if product exists
+//     const itemExists = cart.items.find(
+//       item => item.productId === productId
+//     );
+
+//     if (!itemExists) {
+//       return res.status(404).json({ message: "Product not in cart" });
+//     }
+
+//     //Remove product
+//     cart.items = cart.items.filter(
+//       item => item.productId !== productId
+//     );
+
+//     //Save cart
+//     await cart.save();
+
+//     const cartTotal = cart.items.reduce(
+//       (sum, item) => sum + item.totalPrice,
+//       0
+//     );
+
+//     res.status(200).json({
+//       message: "Product removed from cart",
+//       items: cart.items,
+//       cartTotal
+//     });
+
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const removeFromCart = async (req, res) => {
   try {
-    const { userId, productId } = req.body;
+    const { userId, productId } = req.params;
 
     const cart = await Cart.findOne({ userId });
 
@@ -147,21 +190,18 @@ export const removeFromCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    //Check if product exists
     const itemExists = cart.items.find(
-      item => item.productId === productId
+      item => item.productId === Number(productId)
     );
 
     if (!itemExists) {
       return res.status(404).json({ message: "Product not in cart" });
     }
 
-    //Remove product
     cart.items = cart.items.filter(
-      item => item.productId !== productId
+      item => item.productId !== Number(productId)
     );
 
-    //Save cart
     await cart.save();
 
     const cartTotal = cart.items.reduce(
@@ -181,9 +221,34 @@ export const removeFromCart = async (req, res) => {
 };
 
 // clear cart
+// export const clearCart = async (req, res) => {
+//   try {
+//     const { userId } = req.body;
+
+//     const cart = await Cart.findOne({ userId });
+
+//     if (!cart) {
+//       return res.status(404).json({ message: "Cart not found" });
+//     }
+
+//     cart.items = [];
+
+//     await cart.save();
+
+//     res.status(200).json({
+//       message: "Cart cleared successfully",
+//       items: [],
+//       cartTotal: 0
+//     });
+
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const clearCart = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId } = req.params;
 
     const cart = await Cart.findOne({ userId });
 
@@ -192,7 +257,6 @@ export const clearCart = async (req, res) => {
     }
 
     cart.items = [];
-
     await cart.save();
 
     res.status(200).json({
