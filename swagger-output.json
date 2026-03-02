@@ -334,7 +334,7 @@
         }
       }
     },
-    "/api/favorite/remove": {
+    "/api/favorite/{userId}/{productId}": {
       "delete": {
         "description": "",
         "responses": {
