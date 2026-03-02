@@ -20,9 +20,8 @@ router.post("/cart/decrease", isAuthenticated,  decreaseQty);
 router.get("/cart/:userId", isAuthenticated,  getCartItems);
 // router.delete("/cart/remove", isAuthenticated,  removeFromCart);
 // router.delete("/cart/clear", isAuthenticated,  clearCart);
-router.delete("/remove/:userId/:productId", removeFromCart);
-
-router.delete("/clear/:userId", clearCart);
+router.delete("/remove/:userId/:productId",isAuthenticated, removeFromCart);
+router.delete("/clear/:userId",isAuthenticated, clearCart);
 
 
 

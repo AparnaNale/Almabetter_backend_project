@@ -11,6 +11,16 @@
     "http"
   ],
   "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/products": {
       "get": {
         "description": "",
@@ -77,6 +87,9 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -90,6 +103,11 @@
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "Auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -109,6 +127,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -124,6 +145,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "Auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
@@ -142,6 +168,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -161,11 +190,22 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "Auth",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -173,22 +213,60 @@
         }
       }
     },
-    "/api/cart/remove": {
+    "/api/remove/{userId}/{productId}": {
       "delete": {
         "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
-    "/api/cart/clear": {
+    "/api/clear/{userId}": {
       "delete": {
         "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }

@@ -62,17 +62,27 @@ export const increaseQty = async (req, res) => {
     const { userId, productId } = req.body;
 
     const cart = await Cart.findOne({ userId });
-    if (!cart) return res.status(404).json({ message: "Cart not found" });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
 
-    const item = cart.items.find(i => i.productId === productId);
-    if (!item) return res.status(404).json({ message: "Item not found" });
+    const item = cart.items.find(
+      i => i.productId === Number(productId)
+    );
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found in cart" });
+    }
 
     item.quantity += 1;
-    item.totalPrice = item.price * item.quantity;
 
     await cart.save();
 
-    res.json({ message: "Quantity increased", cart });
+    res.status(200).json({
+      message: "Quantity increased successfully",
+      items: cart.items
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -84,27 +94,37 @@ export const decreaseQty = async (req, res) => {
     const { userId, productId } = req.body;
 
     const cart = await Cart.findOne({ userId });
-    if (!cart) return res.status(404).json({ message: "Cart not found" });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
 
-    const item = cart.items.find(i => i.productId === productId);
-    if (!item) return res.status(404).json({ message: "Item not found" });
+    const itemIndex = cart.items.findIndex(
+      i => i.productId === Number(productId)
+    );
 
-    item.quantity -= 1;
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Item not found in cart" });
+    }
 
-    if (item.quantity <= 0) {
-      cart.items = cart.items.filter(i => i.productId !== productId);
-    } else {
-      item.totalPrice = item.price * item.quantity;
+    // Decrease quantity
+    cart.items[itemIndex].quantity -= 1;
+
+    // If quantity becomes 0 → remove item
+    if (cart.items[itemIndex].quantity <= 0) {
+      cart.items.splice(itemIndex, 1);
     }
 
     await cart.save();
 
-    res.json({ message: "Quantity decreased", cart });
+    res.status(200).json({
+      message: "Quantity decreased successfully",
+      items: cart.items
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // get cart products
 export const getCartItems = async (req, res) => {
@@ -122,7 +142,7 @@ export const getCartItems = async (req, res) => {
     }
 
     const totalAmount = cart.items.reduce(
-      (sum, item) => sum + item.totalPrice,
+      (sum, item) => sum + (item.price * item.quantity),
       0
     );
 
@@ -137,49 +157,6 @@ export const getCartItems = async (req, res) => {
 };
 
 //remove product from cart
-// export const removeFromCart = async (req, res) => {
-//   try {
-//     const { userId, productId } = req.body;
-
-//     const cart = await Cart.findOne({ userId });
-
-//     if (!cart) {
-//       return res.status(404).json({ message: "Cart not found" });
-//     }
-
-//     //Check if product exists
-//     const itemExists = cart.items.find(
-//       item => item.productId === productId
-//     );
-
-//     if (!itemExists) {
-//       return res.status(404).json({ message: "Product not in cart" });
-//     }
-
-//     //Remove product
-//     cart.items = cart.items.filter(
-//       item => item.productId !== productId
-//     );
-
-//     //Save cart
-//     await cart.save();
-
-//     const cartTotal = cart.items.reduce(
-//       (sum, item) => sum + item.totalPrice,
-//       0
-//     );
-
-//     res.status(200).json({
-//       message: "Product removed from cart",
-//       items: cart.items,
-//       cartTotal
-//     });
-
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 export const removeFromCart = async (req, res) => {
   try {
     const { userId, productId } = req.params;
@@ -205,7 +182,7 @@ export const removeFromCart = async (req, res) => {
     await cart.save();
 
     const cartTotal = cart.items.reduce(
-      (sum, item) => sum + item.totalPrice,
+      (sum, item) => sum + (item.price * item.quantity),
       0
     );
 
