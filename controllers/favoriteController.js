@@ -84,23 +84,37 @@ export const removeFromFavorite = async (req, res) => {
   try {
     const { userId, productId } = req.params;
 
+    // Validate userId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Invalid userId" });
     }
 
-    const numericProductId = Number(productId);
+    // Find favorite document
+    const favorite = await Favorite.findOne({ userId });
 
-    const result = await Favorite.updateOne(
-      { userId },
-      { $pull: { items: { productId: numericProductId } } }
+    if (!favorite) {
+      return res.status(404).json({ message: "Favorite list not found" });
+    }
+
+    // Check if product exists in favorites
+    const itemExists = favorite.items.find(
+      item => item.productId === Number(productId)
     );
 
-    if (result.modifiedCount === 0) {
+    if (!itemExists) {
       return res.status(404).json({ message: "Product not in favorites" });
     }
 
+    // Remove product from favorites
+    favorite.items = favorite.items.filter(
+      item => item.productId !== Number(productId)
+    );
+
+    await favorite.save();
+
     res.status(200).json({
-      message: "Removed from favorites"
+      message: "Product removed from favorites",
+      items: favorite.items
     });
 
   } catch (error) {
