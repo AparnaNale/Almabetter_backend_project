@@ -82,7 +82,7 @@ export const getFavorites = async (req, res) => {
 // Remove from favorite
 export const removeFromFavorite = async (req, res) => {
   try {
-    const { userId, productId } = req.params;
+    const { productId } = req.params;
 
     // Validate userId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
