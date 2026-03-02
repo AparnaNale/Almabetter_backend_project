@@ -353,10 +353,16 @@
         }
       }
     },
-    "/api/favorite/remove/{productId}": {
+    "/api/favorite/remove/{userId}/{productId}": {
       "delete": {
         "description": "",
         "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "productId",
             "in": "path",
