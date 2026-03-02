@@ -85,39 +85,51 @@ export const removeFromFavorite = async (req, res) => {
     const { userId, productId } = req.body;
 
     if (!userId || !productId) {
-      return res
-        .status(400)
-        .json({ message: "userId and productId required" });
+      return res.status(400).json({
+        message: "userId and productId required"
+      });
     }
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid userId" });
+      return res.status(400).json({
+        message: "Invalid userId"
+      });
     }
 
-    // find user's favorite
+    const numericProductId = Number(productId);
+
+    if (isNaN(numericProductId)) {
+      return res.status(400).json({
+        message: "Invalid productId"
+      });
+    }
+
     const favorite = await Favorite.findOne({ userId });
 
     if (!favorite) {
-      return res.status(404).json({ message: "Favorite not found" });
+      return res.status(404).json({
+        message: "Favorite not found"
+      });
     }
 
     const beforeCount = favorite.items.length;
 
-    // remove product
     favorite.items = favorite.items.filter(
-      (item) => item.productId !== Number(productId)
+      (item) => item.productId !== numericProductId
     );
 
     if (favorite.items.length === beforeCount) {
-      return res.status(404).json({ message: "Product not in favorites" });
+      return res.status(404).json({
+        message: "Product not in favorites"
+      });
     }
 
     await favorite.save();
 
     res.status(200).json({
-      message: "Removed from favorites",
-      // favorites: favorite.items
+      message: "Removed from favorites"
     });
+
   } catch (error) {
     res.status(500).json({
       message: "Failed to remove favorite",

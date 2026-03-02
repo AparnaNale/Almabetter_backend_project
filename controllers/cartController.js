@@ -56,6 +56,37 @@ export const addToCart = async (req, res) => {
   }
 };
 
+// get cart products
+export const getCartItems = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const cart = await Cart.findOne({ userId });
+
+    //if cart not found
+    if (!cart) {
+      return res.json({
+        items: [],
+        totalAmount: 0
+      });
+    }
+
+    const totalAmount = cart.items.reduce(
+      (sum, item) => sum + (item.price * item.quantity),
+      0
+    );
+
+    res.json({
+      items: cart.items,
+      totalAmount
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // increase qty
 export const increaseQty = async (req, res) => {
   try {
@@ -126,35 +157,6 @@ export const decreaseQty = async (req, res) => {
   }
 };
 
-// get cart products
-export const getCartItems = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const cart = await Cart.findOne({ userId });
-
-    //if cart not found
-    if (!cart) {
-      return res.json({
-        items: [],
-        totalAmount: 0
-      });
-    }
-
-    const totalAmount = cart.items.reduce(
-      (sum, item) => sum + (item.price * item.quantity),
-      0
-    );
-
-    res.json({
-      items: cart.items,
-      totalAmount
-    });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 //remove product from cart
 export const removeFromCart = async (req, res) => {
@@ -198,31 +200,6 @@ export const removeFromCart = async (req, res) => {
 };
 
 // clear cart
-// export const clearCart = async (req, res) => {
-//   try {
-//     const { userId } = req.body;
-
-//     const cart = await Cart.findOne({ userId });
-
-//     if (!cart) {
-//       return res.status(404).json({ message: "Cart not found" });
-//     }
-
-//     cart.items = [];
-
-//     await cart.save();
-
-//     res.status(200).json({
-//       message: "Cart cleared successfully",
-//       items: [],
-//       cartTotal: 0
-//     });
-
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 export const clearCart = async (req, res) => {
   try {
     const { userId } = req.params;
